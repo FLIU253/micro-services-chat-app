@@ -1,4 +1,7 @@
-//by adding the types, it allows you to do any key that is a string i.e. cache.a="test"
+// accesses a variable inside of process.env, throwing an error if it's not found
+// always run this method in advance (i.e. upon initialisation) so that the error is thrown as early as possible
+// caching the values improves performance – accessing process.env many times is bad
+
 const cache: { [key: string]: string } = {};
 
 const accessEnv = (key: string, defaultValue: string) => {
