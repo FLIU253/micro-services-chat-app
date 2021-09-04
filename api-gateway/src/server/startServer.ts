@@ -9,7 +9,7 @@ import schema from '#root/graphql/schema';
 
 import formatGraphQLErrors from './formatGraphQLErrors';
 
-const PORT = 7000; //<number>config.get('PORT');
+const PORT = <number>config.get('PORT');
 
 const startServer = () => {
 	const apolloServer = new ApolloServer({
