@@ -15,6 +15,10 @@ const schema = gql`
 		user: User!
 	}
 
+	type Mutation {
+		createUser(password: String!, username: String!): User!
+	}
+
 	type Query {
 		userSession(me: Boolean!): UserSession
 	}
