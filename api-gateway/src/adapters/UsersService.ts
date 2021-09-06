@@ -22,6 +22,13 @@ export default class UsersService {
 		return body;
 	}
 
+	static async createUserSession({ password, username }: { password: string; username: string }) {
+		const body = <UserSession>await got
+			.post(`${USERS_SERVICE_URI}/sessions`, { json: { password, username } })
+			.json();
+		return body;
+	}
+
 	static async fetchUser({ userId }: { userId: string }): Promise<User | null> {
 		const body = await got.get(`${USERS_SERVICE_URI}/users/${userId}`).json();
 		if (!body) return null;
