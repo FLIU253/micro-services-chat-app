@@ -4,5 +4,15 @@ import 'normalize.css/normalize.css';
 import React from 'react';
 import { render } from 'react-dom';
 import Root from './components/Root';
+import { RecoilRoot } from 'recoil';
+import { ApolloProvider } from '@apollo/client';
+import apolloClient from '#root/api/apolloClient';
 
-render(<Root />, document.getElementById('app'));
+render(
+	<ApolloProvider client={apolloClient}>
+		<RecoilRoot>
+			<Root />
+		</RecoilRoot>
+	</ApolloProvider>,
+	document.getElementById('app')
+);
