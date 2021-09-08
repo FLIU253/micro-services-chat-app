@@ -1,10 +1,11 @@
 import { Spinner } from '@blueprintjs/core';
 import { gql } from '@apollo/client';
-import React, { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import apolloClient from '#root/api/apolloClient';
 import { useRecoilState } from 'recoil';
 import userSessionAtom from '#root/recoil/atoms/userSession';
+import Initialised from './initialised/Initialised';
 
 const SpinnerWrapper = styled.div`
 	left: 50%;
@@ -25,7 +26,7 @@ const query = gql`
 
 const Root = () => {
 	const [ isLoading, setIsLoading ] = useState(true);
-	const [ userSession, setUserSession ] = useRecoilState(userSessionAtom);
+	const [, setUserSession ] = useRecoilState(userSessionAtom);
 
 	useEffect(() => {
 		apolloClient.query({ query }).then((res) => {
@@ -40,9 +41,7 @@ const Root = () => {
 			<Spinner />
 		</SpinnerWrapper>
 	) : (
-		<Fragment>
-			<pre>{JSON.stringify(userSession, null, 2)}</pre>
-		</Fragment>
+		<Initialised />
 	);
 };
 
