@@ -1,5 +1,34 @@
-import { Card, Classes, Elevation, FormGroup, InputGroup } from '@blueprintjs/core';
+import { gql, useMutation } from '@apollo/client';
+import { Button, Card, Classes, Elevation, FormGroup, InputGroup, Intent } from '@blueprintjs/core';
+import { useForm } from 'react-hook-form';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+
+import userSessionAtom from '#root/recoil/atoms/userSession';
+import useGenerateId from '#utils/hooks/forms/useGenerateId';
+import toaster from '#utils/misc/toaster';
+
+interface FormData {
+	password: string;
+	username: string;
+}
+
+const Form = styled.form`
+	margin: auto;
+	width: 25rem;
+`;
+
+const Heading = styled.strong.attrs({ className: Classes.HEADING })`
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+`;
+
+const LargeFormGroup = styled(FormGroup)`
+  .bp3-label {
+    font-size: 1rem;
+  }
+`;
 
 const Wrapper = styled.div`
 	display: flex;
@@ -7,35 +36,61 @@ const Wrapper = styled.div`
 	width: 100%;
 `;
 
-const Form = styled.form`
-	margin: auto;
-	width: 25rem;
-`;
-
-const LargeFormGroup = styled(FormGroup)`
-	.bp3-label {
-		font-size: 1rem;
+const mutation = gql`
+	mutation($password: String!, $username: String!) {
+		createUserSession(password: $password, username: $username) {
+			user {
+				username
+			}
+		}
 	}
 `;
 
-const Heading = styled.strong.attrs({ className: Classes.HEADING })`
-	display: block;
-	font-size:  1.5rem;
-	margin-bottom: 0.75rem;
-`;
-
 const Login = () => {
+	const { formState, handleSubmit, register } = useForm<FormData>();
+	const [ createUserSession ] = useMutation(mutation);
+	const generateId = useGenerateId();
+	const [ , setUserSession ] = useRecoilState(userSessionAtom);
+
+	const onLoginSubmit = async ({ password, username }: FormData) => {
+		try {
+			console.log('username is: ', username);
+			console.log('password is: ', password);
+			console.log(formState);
+			const result = await createUserSession({ variables: { password: 'password', username: 'lebron' } });
+			if (result.data.createUserSession) setUserSession(result.data.createUserSession);
+		} catch (err) {
+			console.log(JSON.stringify(err, null, 2));
+			toaster.show({ intent: Intent.DANGER, message: 'Something went wrong! Please try again.' });
+		}
+	};
+
 	return (
 		<Wrapper>
-			<Form>
+			<Form onSubmit={handleSubmit(onLoginSubmit)}>
 				<Card elevation={Elevation.TWO}>
 					<Heading>Chat App</Heading>
-					<LargeFormGroup label="Username">
-						<InputGroup autoFocus large />
+					<LargeFormGroup label="Username" labelFor={generateId('username')}>
+						<InputGroup
+							{...register('username')}
+							autoFocus
+							disabled={formState.isSubmitting}
+							id={generateId('username')}
+							large
+						/>
 					</LargeFormGroup>
-					<LargeFormGroup label="Password">
-						<InputGroup large type="password" />
+					<LargeFormGroup label="Password" labelFor={generateId('password')}>
+						<InputGroup
+							disabled={formState.isSubmitting}
+							id={generateId('password')}
+							large
+							type="password"
+							{...register('password')}
+						/>
 					</LargeFormGroup>
+					<Button intent={Intent.PRIMARY} large loading={formState.isSubmitting} type="submit">
+						Login
+					</Button>
 				</Card>
 			</Form>
 		</Wrapper>
