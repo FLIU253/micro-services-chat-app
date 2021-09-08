@@ -64,7 +64,7 @@ const setupRoutes = (app: Express) => {
 		try {
 			const userSession = await userSessionRepository.findOne(req.params.sessionId);
 
-			if (!userSession) return next(new Error('Invalid session ID'));
+			if (!userSession) return res.status(404).end();
 
 			await userSessionRepository.remove(userSession);
 
